@@ -27,6 +27,7 @@ Route::prefix('campaign')->group(function(){
     Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaign.index');
     Route::post('/create', [CampaignController::class, 'store'])->name('campaign.store');
     Route::get('/view', [CampaignController::class, 'view'])->name('campaign.view');
-    Route::get('/edit/{id}', [CampaignController::class, 'edit'])->name('campaign.edit');
-    Route::post('/update/{id}', [CampaignController::class, 'edit'])->name('campaign.update');
+    Route::get('/{id}/edit', [CampaignController::class, 'edit'])->name('campaign.edit');
+    Route::post('/{id}/update', [CampaignController::class, 'update'])->name('campaign.update');
+    Route::get('/{id}/delete', [CampaignController::class,'softDeleteCampaign']);
 });

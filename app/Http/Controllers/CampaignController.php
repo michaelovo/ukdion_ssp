@@ -5,18 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\Campaign;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\File;
 
 class CampaignController extends Controller
 {
     public function index()
     {
-        $campaigns= Campaign::get();
-        return view('campaigns.view',compact('campaigns'));
+        //$campaigns= Campaign::get();
+        return view('layouts.campaigns.create');//,compact('campaigns'));
     }
 
 
-    public function create()
+    public function view()
     {
+        $campaigns= Campaign::get();
+        return view('layouts.campaigns.view',compact('campaigns'));
 
     }
 
@@ -37,12 +40,13 @@ class CampaignController extends Controller
         $campaign->daily_budget = $request->daily_budget;
         $campaign->start_date = $request->start_date;
         $campaign->end_date = $request->end_date;
-        $response = cloudinary()->upload($request->file('image')->getRealPath())->getSecurePath(); // save image to Cloudinary
+        $image_url = cloudinary()->upload($request->file('image')->getRealPath(),['folder'=>'ukdion'],)->getSecurePath(); // save image to Cloudinary
+        $campaign->image = $image_url;
         $campaign->save();
-        return back()->with('message','Saved Successfully!');
+        return back()->with('success','Saved Successfully!');
     }
 
-    public function edit(Campaign $id)
+    public function edit($id)
     {
         $campaign = Campaign::where(['id'=>$id])->firstOrFail();
         return view('layouts.campaigns.edit',compact('campaign'));
@@ -66,9 +70,26 @@ class CampaignController extends Controller
         $campaign->daily_budget = $request->daily_budget;
         $campaign->start_date = $request->start_date;
         $campaign->end_date = $request->end_date;
-        //$response = cloudinary()->upload($request->file('image')->getRealPath())->getSecurePath(); // save image to Cloudinary
+        
+        // Start ---- check if image is change before updating
+        if ($request->hasFile('image')) {
+            $oldProfileImage =  $campaign->image; // get previous image from folder
+            if (($campaign->image != null) && (File::exists($oldProfileImage))) { // remove previous image from folder
+              unlink($oldProfileImage);
+            }
+            $image_tmp = $request->file('image');
+            if ($image_tmp->isValid()) {
+                $image_url = cloudinary()->upload($request->file('image')->getRealPath(),['folder'=>'ukdion'],)->getSecurePath(); // save image to Cloudinary
+            }
+        }
+        else {
+          $image_url = $request->current_image;
+        }
+        // End ---- image update
+        $campaign->image = $image_url;
         $campaign->update();
-        return back()->with('message','Saved Successfully!');
+        return redirect('campaign/view')->with('success','Upadted Successfully!!');
+
     }
 
 
@@ -90,7 +111,8 @@ class CampaignController extends Controller
         $campaign->daily_budget = $request->daily_budget;
         $campaign->start_date = $request->start_date;
         $campaign->end_date = $request->end_date;
-        $response = cloudinary()->upload($request->file('image')->getRealPath())->getSecurePath(); // save image to Cloudinary
+        $image_url = cloudinary()->upload($request->file('image')->getRealPath(),['folder'=>'ukdion'],)->getSecurePath(); // save image to Cloudinary
+        $campaign->image = $image_url;
         $campaign->save();
         return response()->json(['message' => 'Saved Successfully!']);
     }
@@ -103,9 +125,10 @@ class CampaignController extends Controller
     }
 
 
-    public function destroy(Campaign $campaign)
-    {
-        //
-    }
+    public function softDeleteCampaign($id){
+        Campaign::where(['id' => $id])->delete();
+        return back()->with('success','Campaign Deleted Successful');
+
+      }
 
 }
