@@ -68,7 +68,7 @@
 
                 <div class="form-group">
                   <label for="image">Upload <span class="text-red">*</span></label>
-                  <input tabindex="6" type="file" id="image" name="image" value="{{old('image')}}" required />
+                  <input tabindex="6" type="file" id="image" name="image[]" value="{{old('image')}}" multiple required />
                 </div>
               </div>
 

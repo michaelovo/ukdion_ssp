@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Campaign;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Events\ImageUploadEvent;
 use Illuminate\Support\Facades\File;
 
 class CampaignController extends Controller
@@ -30,7 +31,7 @@ class CampaignController extends Controller
             'daily_budget'=>'required|string',
             'start_date'=>'required|date',
             'end_date'=>'required|date',
-            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:28',
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:300',
 
         ]);
 
@@ -40,9 +41,12 @@ class CampaignController extends Controller
         $campaign->daily_budget = $request->daily_budget;
         $campaign->start_date = $request->start_date;
         $campaign->end_date = $request->end_date;
-        $image_url = cloudinary()->upload($request->file('image')->getRealPath(),['folder'=>'ukdion'],)->getSecurePath(); // save image to Cloudinary
-        $campaign->image = $image_url;
+        
         $campaign->save();
+        if($request->hasfile('image'))
+        {
+             event(new ImageUploadEvent($campaign));
+        }
         return back()->with('success','Saved Successfully!');
     }
 
@@ -70,23 +74,6 @@ class CampaignController extends Controller
         $campaign->daily_budget = $request->daily_budget;
         $campaign->start_date = $request->start_date;
         $campaign->end_date = $request->end_date;
-        
-        // Start ---- check if image is change before updating
-        if ($request->hasFile('image')) {
-            $oldProfileImage =  $campaign->image; // get previous image from folder
-            if (($campaign->image != null) && (File::exists($oldProfileImage))) { // remove previous image from folder
-              unlink($oldProfileImage);
-            }
-            $image_tmp = $request->file('image');
-            if ($image_tmp->isValid()) {
-                $image_url = cloudinary()->upload($request->file('image')->getRealPath(),['folder'=>'ukdion'],)->getSecurePath(); // save image to Cloudinary
-            }
-        }
-        else {
-          $image_url = $request->current_image;
-        }
-        // End ---- image update
-        $campaign->image = $image_url;
         $campaign->update();
         return redirect('campaign/view')->with('success','Upadted Successfully!!');
 
@@ -101,7 +88,7 @@ class CampaignController extends Controller
             'daily_budget'=>'required|string',
             'start_date'=>'required|date',
             'end_date'=>'required|date',
-            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:28',
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:800',
 
         ]);
 
@@ -111,16 +98,17 @@ class CampaignController extends Controller
         $campaign->daily_budget = $request->daily_budget;
         $campaign->start_date = $request->start_date;
         $campaign->end_date = $request->end_date;
-        $image_url = cloudinary()->upload($request->file('image')->getRealPath(),['folder'=>'ukdion'],)->getSecurePath(); // save image to Cloudinary
-        $campaign->image = $image_url;
         $campaign->save();
+        if($request->hasfile('image')){
+            event(new ImageUploadEvent($campaign));
+        }
         return response()->json(['message' => 'Saved Successfully!']);
     }
 
 
     public function api_view_campaigns()
     {
-        $campaigns = Campaign::all();
+        $campaigns = Campaign::with('photos')->get();
         return $campaigns;
     }
 
