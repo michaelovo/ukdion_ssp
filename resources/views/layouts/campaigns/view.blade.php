@@ -101,7 +101,7 @@
 
         <div class="modal-body">
                 {{-- <img src=""  alt="trending image" width="100" height="50" id="target"/> --}}
-                <img class = "image_modal" src="" id="target">
+                <img class = "image_modal" src="" id="target" width="150" height="100">
         </div>
 
         <div class="modal-footer">
