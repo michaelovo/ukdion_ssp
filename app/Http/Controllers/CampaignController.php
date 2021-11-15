@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Photo;
 use App\Models\Campaign;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -77,6 +78,11 @@ class CampaignController extends Controller
         $campaign->update();
         return redirect('campaign/view')->with('success','Upadted Successfully!!');
 
+    }
+
+    public function view_photos($id){
+        $photos = Photo::where('campaign_id',$id)->get();
+        return json_encode($photos);
     }
 
 

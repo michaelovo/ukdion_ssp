@@ -30,4 +30,5 @@ Route::prefix('campaign')->group(function(){
     Route::get('/{id}/edit', [CampaignController::class, 'edit'])->name('campaign.edit');
     Route::post('/{id}/update', [CampaignController::class, 'update'])->name('campaign.update');
     Route::get('/{id}/delete', [CampaignController::class,'softDeleteCampaign']);
+    Route::get('/{id}/photos', [CampaignController::class,'view_photos'])->name('photos.show');
 });
