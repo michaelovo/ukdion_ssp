@@ -50,10 +50,10 @@
                         @foreach($campaigns as $campaign)
                           <tr>
                             <td>{{$campaign->name ?? ''}}</td>
-                            <td>{{Carbon::parse($campaign->start_date)->format('Y-m-d H:i:s')}}</td>
-                            <td>{{Carbon::parse($campaign->end_date)->format('Y-m-d H:i:s')}}</td>
-                            <td>{{$campaign->daily_budget ?? ''}}</td>
-                            <td>{{$campaign->total_budget ?? ''}}</td>
+                            <td>{{Carbon::parse($campaign->start_date)->format('Y-M-D-d')}}</td>
+                            <td>{{Carbon::parse($campaign->end_date)->format('Y-M-D-d')}}</td>
+                            <td>&#36;{{number_format($campaign->daily_budget ?? '',2)}}</td>
+                            <td>&#36;{{number_format($campaign->total_budget ?? '',2)}}</td>
                             {{-- <td>
 
                                 <a href="{{ $campaign->photos->image_url ?? '' }}" target="_blank">
