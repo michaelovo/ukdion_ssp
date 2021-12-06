@@ -95,17 +95,15 @@
       <div class="modal-content">
 
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <button type="button" id="campaignGalleryClosedTop" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
           <h4 class="modal-title" id="mySmallModalLabel">Campaign photos</h4>
         </div>
 
-        <div class="modal-body">
-                {{-- <img src=""  alt="trending image" width="100" height="50" id="target"/> --}}
-                <img class = "image_modal" src="" id="target" width="150" height="100">
+        <div id="campaign_gallery" class="modal-body">
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" id="campaignGalleryClosed" class="btn btn-secondary" data-dismiss="modal">Close</button>
             {{-- <button type="button" class="btn btn-primary">Save changes</button> --}}
             </div>
 
@@ -156,7 +154,12 @@
                             //console.log(res);
                             res.forEach(function(obj) {
                                 console.log(obj.image_url);
-                               $("#target").attr("src",obj.image_url);
+
+                               var gallery =
+                                    `<div>
+                                        <img class = "image_modal" src="${obj.image_url}" width="500" width="300">
+                                    </div>`;
+                                    $('#campaign_gallery').append(gallery);
                             });
                         }
 
@@ -164,9 +167,14 @@
                 });
             }
         });
+
+        $('#campaignGalleryClosed').click(function() {
+         location.reload();
+        });
+        $('#campaignGalleryClosedTop').click(function() {
+         location.reload();
+        });
     });
 </script>
-
-
 
 @endsection
